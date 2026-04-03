@@ -5,3 +5,15 @@ local.properties
 .idea/
 *.iml
 .DS_Store
+# Gradle
+Thumbs.db
+
+# Logs
+*.log
+
+# Android
+captures/
+.externalNativeBuild/
+
+# Firebase
+google-services.json
