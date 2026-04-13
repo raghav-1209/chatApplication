@@ -67,225 +67,225 @@ fun ProfileScreen(
     authViewModel: AuthViewModel
 ) {
 
-    val followerCount by profileViewModel.followerCount.collectAsState()
-    val followingCount by profileViewModel.FollowingCount.collectAsState()
-    val user by profileViewModel.wholeUser.collectAsState()
-
-    var name by remember { mutableStateOf("") }
-    var bioText by remember { mutableStateOf("") }
-    var isEditingBio by remember { mutableStateOf(false) }
-    var image by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        profileViewModel.getFollowers()
-        profileViewModel.getFollowing()
-    }
-
-    LaunchedEffect(user) {
-        user?.let {
-            name = it.credentials.name
-            bioText = it.bio ?: ""
-            image = it.image ?: ""
-        }
-    }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let { profileViewModel.saveImage(it) }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-
-        TopAppBar(
-            title = {Text("Account",color=Color.White)},
-            navigationIcon = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Black
-            )
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-
-            Spacer(modifier = Modifier.height(60.dp))
-
-            Box(contentAlignment = Alignment.BottomEnd) {
-
-                AsyncImage(
-                    model = image.takeIf { it.isNotBlank() },
-                    contentDescription = "Profile Image",
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.user),
-                    error = painterResource(R.drawable.user),
-                    modifier = Modifier
-                        .size(150.dp)
-                        .clip(CircleShape)
-                        .border(
-                            3.dp,
-                            Color.DarkGray,
-                            CircleShape
-                        )
-                )
-
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.DarkGray)
-                        .clickable { launcher.launch("image/*") },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Change Photo",
-                        tint = Color.White
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                singleLine = true,
-                label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.DarkGray,
-                    unfocusedBorderColor = Color.Gray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.DarkGray
-                )
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 🔥 Bio
-            OutlinedTextField(
-                value = bioText,
-                onValueChange = { bioText = it },
-                label = { Text("Bio") },
-                maxLines = 4,
-                readOnly = !isEditingBio,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                trailingIcon = {
-                    Icon(
-                        imageVector = if (isEditingBio) Icons.Default.Check else Icons.Default.Edit,
-                        contentDescription = null,
-                        tint = Color.DarkGray,
-                        modifier = Modifier.clickable {
-                            if (isEditingBio) {
-                                profileViewModel.saveBio(bioText)
-                            }
-                            isEditingBio = !isEditingBio
-                        }
-                    )
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.DarkGray,
-                    unfocusedBorderColor = Color.Gray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.DarkGray
-                )
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Card (
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF252525)
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 20.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable {
-                            navController.navigate(DestinationScreen.followerScreen.route)
-                        }
-                    ) {
-                        Text(
-                            text = followerCount.toString(),
-                            fontSize = 22.sp,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Followers",
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable {
-                            navController.navigate(DestinationScreen.followingScreen.route)
-                        }
-                    ) {
-                        Text(
-                            text = followingCount.toString(),
-                            fontSize = 22.sp,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Following",
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = {
-                    authViewModel.logout()
-                    navController.navigate(DestinationScreen.signInScreen.route)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray
-                ),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 40.dp)
-            ) {
-                Icon(Icons.Default.SettingsPower, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Logout")
-            }
-        }
-    }
+//    val followerCount by profileViewModel.followerCount.collectAsState()
+//    val followingCount by profileViewModel.FollowingCount.collectAsState()
+//    val user by profileViewModel.wholeUser.collectAsState()
+//
+//    var name by remember { mutableStateOf("") }
+//    var bioText by remember { mutableStateOf("") }
+//    var isEditingBio by remember { mutableStateOf(false) }
+//    var image by remember { mutableStateOf("") }
+//    LaunchedEffect(Unit) {
+//        profileViewModel.getFollowers()
+//        profileViewModel.getFollowing()
+//    }
+//
+//    LaunchedEffect(user) {
+//        user?.let {
+//            name = it.credentials.name
+//            bioText = it.bio ?: ""
+//            image = it.image ?: ""
+//        }
+//    }
+//
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri ->
+//        uri?.let { profileViewModel.saveImage(it) }
+//    }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.Black)
+//    ) {
+//
+//        TopAppBar(
+//            title = {Text("Account",color=Color.White)},
+//            navigationIcon = {
+//                IconButton(onClick = {
+//                    navController.popBackStack()
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Default.ArrowBack,
+//                        contentDescription = "Back",
+//                        tint = Color.White
+//                    )
+//                }
+//            },
+//            colors = TopAppBarDefaults.topAppBarColors(
+//                containerColor = Color.Black
+//            )
+//        )
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(horizontal = 24.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//
+//
+//            Spacer(modifier = Modifier.height(60.dp))
+//
+//            Box(contentAlignment = Alignment.BottomEnd) {
+//
+//                AsyncImage(
+//                    model = image.takeIf { it.isNotBlank() },
+//                    contentDescription = "Profile Image",
+//                    contentScale = ContentScale.Crop,
+//                    placeholder = painterResource(R.drawable.user),
+//                    error = painterResource(R.drawable.user),
+//                    modifier = Modifier
+//                        .size(150.dp)
+//                        .clip(CircleShape)
+//                        .border(
+//                            3.dp,
+//                            Color.DarkGray,
+//                            CircleShape
+//                        )
+//                )
+//
+//                Box(
+//                    modifier = Modifier
+//                        .size(36.dp)
+//                        .clip(CircleShape)
+//                        .background(Color.DarkGray)
+//                        .clickable { launcher.launch("image/*") },
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Edit,
+//                        contentDescription = "Change Photo",
+//                        tint = Color.White
+//                    )
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(30.dp))
+//
+//            OutlinedTextField(
+//                value = name,
+//                onValueChange = { name = it },
+//                singleLine = true,
+//                label = { Text("Name") },
+//                modifier = Modifier.fillMaxWidth(),
+//                shape = RoundedCornerShape(16.dp),
+//                colors = OutlinedTextFieldDefaults.colors(
+//                    focusedBorderColor = Color.DarkGray,
+//                    unfocusedBorderColor = Color.Gray,
+//                    focusedTextColor = Color.White,
+//                    unfocusedTextColor = Color.White,
+//                    cursorColor = Color.DarkGray
+//                )
+//            )
+//
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            // 🔥 Bio
+//            OutlinedTextField(
+//                value = bioText,
+//                onValueChange = { bioText = it },
+//                label = { Text("Bio") },
+//                maxLines = 4,
+//                readOnly = !isEditingBio,
+//                modifier = Modifier.fillMaxWidth(),
+//                shape = RoundedCornerShape(16.dp),
+//                trailingIcon = {
+//                    Icon(
+//                        imageVector = if (isEditingBio) Icons.Default.Check else Icons.Default.Edit,
+//                        contentDescription = null,
+//                        tint = Color.DarkGray,
+//                        modifier = Modifier.clickable {
+//                            if (isEditingBio) {
+//                                profileViewModel.saveBio(bioText)
+//                            }
+//                            isEditingBio = !isEditingBio
+//                        }
+//                    )
+//                },
+//                colors = OutlinedTextFieldDefaults.colors(
+//                    focusedBorderColor = Color.DarkGray,
+//                    unfocusedBorderColor = Color.Gray,
+//                    focusedTextColor = Color.White,
+//                    unfocusedTextColor = Color.White,
+//                    cursorColor = Color.DarkGray
+//                )
+//            )
+//
+//            Spacer(modifier = Modifier.height(30.dp))
+//
+//            Card (
+//                shape = RoundedCornerShape(20.dp),
+//                colors = CardDefaults.cardColors(
+//                    containerColor = Color(0xFF252525)
+//                ),
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .padding(vertical = 20.dp)
+//                        .fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceEvenly
+//                ) {
+//
+//                    Column(
+//                        horizontalAlignment = Alignment.CenterHorizontally,
+//                        modifier = Modifier.clickable {
+//                            navController.navigate(DestinationScreen.followerScreen.route)
+//                        }
+//                    ) {
+//                        Text(
+//                            text = followerCount.toString(),
+//                            fontSize = 22.sp,
+//                            color = Color.White
+//                        )
+//                        Text(
+//                            text = "Followers",
+//                            fontSize = 14.sp,
+//                            color = Color.Gray
+//                        )
+//                    }
+//
+//                    Column(
+//                        horizontalAlignment = Alignment.CenterHorizontally,
+//                        modifier = Modifier.clickable {
+//                            navController.navigate(DestinationScreen.followingScreen.route)
+//                        }
+//                    ) {
+//                        Text(
+//                            text = followingCount.toString(),
+//                            fontSize = 22.sp,
+//                            color = Color.White
+//                        )
+//                        Text(
+//                            text = "Following",
+//                            fontSize = 14.sp,
+//                            color = Color.Gray
+//                        )
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.weight(1f))
+//
+//            Button(
+//                onClick = {
+//                    authViewModel.logout()
+//                    navController.navigate(DestinationScreen.signInScreen.route)
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = Color.Gray
+//                ),
+//                shape = RoundedCornerShape(16.dp),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(bottom = 40.dp)
+//            ) {
+//                Icon(Icons.Default.SettingsPower, contentDescription = null)
+//                Spacer(modifier = Modifier.width(8.dp))
+//                Text("Logout")
+//            }
+//        }
+//    }
 }

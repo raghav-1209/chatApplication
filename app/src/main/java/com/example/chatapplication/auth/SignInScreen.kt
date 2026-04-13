@@ -41,13 +41,31 @@ fun SignInScreen(authViewModel: AuthViewModel,navController: NavController) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val authState by authViewModel.AuthState.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
     val context=LocalContext.current
 
 
     LaunchedEffect(authState) {
-        if (authState)
-            navController.navigate(DestinationScreen.welcomeScreen.route)
+        when (authState) {
+
+            is AuthState.Authenticated -> {
+                navController.navigate(DestinationScreen.welcomeScreen.route) {
+                    popUpTo(DestinationScreen.signInScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+
+            is AuthState.Error -> {
+                Toast.makeText(
+                    context,
+                    (authState as AuthState.Error).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            else -> {}
+        }
     }
 
     val infinite = rememberInfiniteTransition(label = "anim")
@@ -173,19 +191,19 @@ fun SignInScreen(authViewModel: AuthViewModel,navController: NavController) {
                             onClick = {
                                 if(email.isEmpty() || password.isEmpty() || name.isEmpty())
                                     Toast.makeText(context,"Fill The Credentials",Toast.LENGTH_SHORT).show()
-                              else   authViewModel.signIn(email,password,name)
+                                else
+                                    authViewModel.signIn(email,password,name)
                             },
+                            enabled = authState !is AuthState.Loading,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Black
-
-                            )
-
                         ) {
-                            Text("SignIn")
+                            if (authState is AuthState.Loading) {
+                                CircularProgressIndicator()
+                            } else {
+                                Text("SignIn")
+                            }
                         }
 
                         Spacer(Modifier.height(12.dp))

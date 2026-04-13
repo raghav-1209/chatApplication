@@ -6,7 +6,6 @@ import androidx.annotation.RequiresExtension
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.chatapplication.client.WebSocketManager
-import com.example.chatapplication.prefernces.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

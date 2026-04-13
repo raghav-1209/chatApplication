@@ -1,23 +1,17 @@
 package com.example.chatapplication.client
 
-import android.content.SharedPreferences
 import android.util.Log
-import coil.network.HttpException
 import com.example.chatapplication.apis.DataBaseApis
 import com.example.chatapplication.apis.Info
 import com.example.chatapplication.models.ChatData
-import com.example.chatapplication.repository.DataBaseRep
+import com.example.chatapplication.prefernces.SessionManager
 import com.google.firebase.auth.FirebaseAuth
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.client.plugins.websocket.WebSocketException
-import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.http.HttpMethod
-import io.ktor.http.headers
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
@@ -28,7 +22,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -39,7 +32,7 @@ class  WebSocketManager @Inject constructor(
     val client: HttpClient,
     val apis: DataBaseApis,
     val fbAuth: FirebaseAuth,
-    val sharedPreferences: com.example.chatapplication.prefernces.SharedPreferences
+    val sessionManager: SessionManager
 ) {
 
     private var session: DefaultClientWebSocketSession? = null
@@ -106,12 +99,11 @@ class  WebSocketManager @Inject constructor(
     private suspend fun refreshAndReconnect() {
 
         try {
-            val refreshToken = sharedPreferences.getRefreshToken(uid) ?: return
+            val refreshToken = sessionManager.getRefreshToken() ?: return
 
             val response = apis.refreshToken(Info(refreshToken))
+            sessionManager.saveSession(uid,response.token,response.refreshToken)
 
-            sharedPreferences.saveAccessToken(uid, response.token)
-            sharedPreferences.saveRefreshToken(uid, response.refreshToken)
 
             connect(response.token)
 

@@ -1,5 +1,6 @@
 package com.example.chatapplication.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Adb
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
@@ -56,13 +58,15 @@ fun WelcomeScreen(
     profileViewModel: ProfileViewModel,
     chatViewModel: ChatViewModel
 ) {
+    val context=LocalContext.current
 
-    LaunchedEffect(Unit) {
-        profileViewModel.loadUser()
-        profileViewModel.getFollowing()
-    }
 
-    val followingInfo by profileViewModel.FollowingInfo.collectAsState()
+//    LaunchedEffect(Unit) {
+//        profileViewModel.loadUser()
+//        profileViewModel.getFollowing()
+//    }
+//
+//    val followingInfo by profileViewModel.FollowingInfo.collectAsState()
 
     Scaffold(
         containerColor = Color.Black,
@@ -78,6 +82,10 @@ fun WelcomeScreen(
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color.White
                 )
+                Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.clickable{
+                    Toast.makeText(context,authViewModel.getName(), Toast.LENGTH_LONG).show()
+                    authViewModel.check(context)
+                }, tint = Color.White)
             }
         },
         bottomBar = {
@@ -99,30 +107,33 @@ fun WelcomeScreen(
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ) { paddingValues ->
+    ) { it ->
+        Column(modifier=Modifier.padding(it)){
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(Color.Black),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-
-            items(followingInfo) { user ->
-
-                ChatRow(
-                    user = user,
-                    onClick = {
-                        navController.navigate(
-                            DestinationScreen.chatScreen
-                                .chatRoute(user.credentials.uid)
-                        )
-                    },
-                    navController
-                )
-            }
         }
+
+//        LazyColumn(
+//            modifier = Modifier
+//                .padding(paddingValues)
+//                .fillMaxSize()
+//                .background(Color.Black),
+//            contentPadding = PaddingValues(vertical = 8.dp)
+//        ) {
+//
+//            items(followingInfo) { user ->
+//
+//                ChatRow(
+//                    user = user,
+//                    onClick = {
+//                        navController.navigate(
+//                            DestinationScreen.chatScreen
+//                                .chatRoute(user.credentials.uid)
+//                        )
+//                    },
+//                    navController
+//                )
+//            }
+//        }
     }
 }
 @Composable

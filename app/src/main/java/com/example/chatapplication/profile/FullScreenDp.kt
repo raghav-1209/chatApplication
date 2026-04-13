@@ -16,26 +16,26 @@ import com.example.chatapplication.chats.ChatViewModel
 
 @Composable
 fun FullScreenDp(uid: String,chatViewModel: ChatViewModel){
-    val user_Info=chatViewModel.User_Info.collectAsState()
-    val image=user_Info.value?.image?:""
-    LaunchedEffect(uid) {
-        chatViewModel.fetchUser(uid)
-    }
-    Box(
-        modifier = Modifier.fillMaxSize().background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        if(image.isEmpty()){
-            Text("No Profile", textAlign = TextAlign.Center)
-        }else {
-
-            AsyncImage(
-                model = image,
-                contentDescription = "Profile Picture",
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-    }
+//    val user_Info=chatViewModel.User_Info.collectAsState()
+//    val image=user_Info.value?.image?:""
+//    LaunchedEffect(uid) {
+//        chatViewModel.fetchUser(uid)
+//    }
+//    Box(
+//        modifier = Modifier.fillMaxSize().background(Color.Black),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        if(image.isEmpty()){
+//            Text("No Profile", textAlign = TextAlign.Center)
+//        }else {
+//
+//            AsyncImage(
+//                model = image,
+//                contentDescription = "Profile Picture",
+//                modifier = Modifier.fillMaxSize()
+//            )
+//        }
+//
+//    }
 
 }

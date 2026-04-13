@@ -27,44 +27,45 @@ import androidx.navigation.NavController
 @Composable
 fun FollowingScreen(profileViewModel: ProfileViewModel,navController: NavController) {
 
-    val followingInfo by profileViewModel.FollowingInfo.collectAsState()
-
-    LaunchedEffect(Unit) {
-        profileViewModel.getFollowing()
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-        Spacer(Modifier.height(10.dp))
-        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = null, tint = Color.White
-            , modifier = Modifier
-                .padding(16.dp)
-                .clickable {
-                    navController.popBackStack()
-
-                })
-        Spacer(modifier = Modifier.height(4.dp))
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                horizontal = 16.dp,
-                vertical = 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(followingInfo) { users ->
-
-                FollowerItem(
-                    name = users.credentials.name,
-                    bio = users.bio,
-                    image = users.image
-                )
-            }
-        }
-    }
+//    val followingInfo by profileViewModel.FollowingInfo.collectAsState()
+//
+//    LaunchedEffect(Unit) {
+//        profileViewModel.getFollowing()
+//    }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.Black)
+//    ) {
+//        Spacer(Modifier.height(10.dp))
+//        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = null, tint = Color.White
+//            , modifier = Modifier
+//                .padding(16.dp)
+//                .clickable {
+//                    navController.popBackStack()
+//
+//                })
+//        Spacer(modifier = Modifier.height(4.dp))
+//
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            contentPadding = PaddingValues(
+//                horizontal = 16.dp,
+//                vertical = 16.dp
+//            ),
+//            verticalArrangement = Arrangement.spacedBy(12.dp)
+//        ) {
+//            items(followingInfo) { users ->
+//
+//                FollowerItem(
+//                    name = users.credentials.name,
+//                    bio = users.bio,
+//                    image = users.image
+//                )
+//            }
+//        }
+//    }
+//}
 }

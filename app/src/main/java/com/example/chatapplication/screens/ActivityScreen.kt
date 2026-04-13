@@ -47,64 +47,64 @@ fun ActivityScreen(
     profileViewModel: ProfileViewModel
 ) {
 
-    val users by profileViewModel.AllUsers.collectAsState()
-    LaunchedEffect(Unit) {
-        profileViewModel.loadAllUsers()
-    }
-    val followStates by profileViewModel.followStates.collectAsState()
-
-    Scaffold(
-        bottomBar = { BottomBar(bottomNavItems, navController) },
-        containerColor = Color.Black
-    ) { padding ->
-
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = 12.dp)
-        ) {
-
-            items(users) { user ->
-
-                val uid = user.credentials.uid
-
-                LaunchedEffect(uid) {
-                    profileViewModel.followState(uid)
-                }
-
-                val state = followStates[uid] ?: "Follow"
-                val displayText = when(state) {
-                    "NONE" -> "Follow"
-                    "REQUESTED" -> "Requested"
-                    "REQUEST_RECEIVED" -> "Follows You"
-                    "FOLLOWING" -> "Following"
-                    "FOLLOWED_BY" -> "Follow Back"
-                    else -> "Follow"
-                }
-
-
-
-
-
-
-                UserItem(
-                    name = user.credentials.name,
-                    bio = user.bio,
-                    image = user.image,
-                    followState = displayText,
-                    onFollowClick = {
-                        profileViewModel.followUser(
-                            user.credentials.uid
-                        )
-                    },
-                    onClick = {
-                        navController.navigate(DestinationScreen.userProfileScreen.createRoute(user.credentials.uid))
-                    }
-                )
-            }
-
-        }
-    }
+//    val users by profileViewModel.AllUsers.collectAsState()
+//    LaunchedEffect(Unit) {
+//        profileViewModel.loadAllUsers()
+//    }
+//    val followStates by profileViewModel.followStates.collectAsState()
+//
+//    Scaffold(
+//        bottomBar = { BottomBar(bottomNavItems, navController) },
+//        containerColor = Color.Black
+//    ) { padding ->
+//
+//        LazyColumn(
+//            modifier = Modifier
+//                .padding(padding)
+//                .padding(horizontal = 12.dp)
+//        ) {
+//
+//            items(users) { user ->
+//
+//                val uid = user.credentials.uid
+//
+//                LaunchedEffect(uid) {
+//                    profileViewModel.followState(uid)
+//                }
+//
+//                val state = followStates[uid] ?: "Follow"
+//                val displayText = when(state) {
+//                    "NONE" -> "Follow"
+//                    "REQUESTED" -> "Requested"
+//                    "REQUEST_RECEIVED" -> "Follows You"
+//                    "FOLLOWING" -> "Following"
+//                    "FOLLOWED_BY" -> "Follow Back"
+//                    else -> "Follow"
+//                }
+//
+//
+//
+//
+//
+//
+//                UserItem(
+//                    name = user.credentials.name,
+//                    bio = user.bio,
+//                    image = user.image,
+//                    followState = displayText,
+//                    onFollowClick = {
+//                        profileViewModel.followUser(
+//                            user.credentials.uid
+//                        )
+//                    },
+//                    onClick = {
+//                        navController.navigate(DestinationScreen.userProfileScreen.createRoute(user.credentials.uid))
+//                    }
+//                )
+//            }
+//
+//        }
+//    }
 }
 @Composable
 fun UserItem(
@@ -177,63 +177,63 @@ fun UserProfileScreen(
     profileViewModel: ProfileViewModel
 ) {
 
-    val user by chatViewModel.User_Info.collectAsState(initial = null)
-
-    LaunchedEffect(uid) {
-        chatViewModel.fetchUser(uid)
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-
-        user?.let { user ->
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                AsyncImage(
-                    model = user.image,
-                    contentDescription = "profile",
-                    modifier = Modifier
-                        .size(170.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.White, CircleShape)
-                        .clickable {
-                            navController.navigate(
-                                DestinationScreen.FullScreenDp.createRoute(
-                                    user.credentials.uid
-                                )
-                            )
-                        },
-                    contentScale = ContentScale.Crop
-                )
-
-                Spacer(modifier = Modifier.height(28.dp))
-
-                Text(
-                    text = user.credentials.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = user.bio ?: "No bio available",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
+//    val user by chatViewModel.User_Info.collectAsState(initial = null)
+//
+//    LaunchedEffect(uid) {
+//        chatViewModel.fetchUser(uid)
+//    }
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.Black),
+//        contentAlignment = Alignment.Center
+//    ) {
+//
+//        user?.let { user ->
+//
+//            Column(
+//                modifier = Modifier
+//                    .padding(horizontal = 32.dp)
+//                    .fillMaxWidth(),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ) {
+//
+//                AsyncImage(
+//                    model = user.image,
+//                    contentDescription = "profile",
+//                    modifier = Modifier
+//                        .size(170.dp)
+//                        .clip(CircleShape)
+//                        .border(2.dp, Color.White, CircleShape)
+//                        .clickable {
+//                            navController.navigate(
+//                                DestinationScreen.FullScreenDp.createRoute(
+//                                    user.credentials.uid
+//                                )
+//                            )
+//                        },
+//                    contentScale = ContentScale.Crop
+//                )
+//
+//                Spacer(modifier = Modifier.height(28.dp))
+//
+//                Text(
+//                    text = user.credentials.name,
+//                    style = MaterialTheme.typography.headlineMedium,
+//                    color = Color.White
+//                )
+//
+//                Spacer(modifier = Modifier.height(10.dp))
+//
+//                Text(
+//                    text = user.bio ?: "No bio available",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = Color.White.copy(alpha = 0.7f),
+//                    textAlign = TextAlign.Center
+//                )
+//            }
+//        }
+//    }
 }

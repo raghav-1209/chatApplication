@@ -44,45 +44,45 @@ import com.example.chatapplication.screens.UserItem
 
 @Composable
 fun FollowerScreen(profileViewModel: ProfileViewModel,navController: NavController) {
-    val followersInfo by profileViewModel.FollowersInfo.collectAsState()
-    val followStates by profileViewModel.followStates.collectAsState()
-    LaunchedEffect(Unit) {
-        profileViewModel.getFollowers()
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-        Spacer(Modifier.height(10.dp))
-        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = null, tint = Color.White
-        , modifier = Modifier
-                .padding(16.dp)
-                .clickable {
-                    navController.popBackStack()
-
-                })
-        Spacer(modifier = Modifier.height(4.dp))
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                horizontal = 16.dp,
-                vertical = 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(followersInfo) { users ->
-
-                FollowerItem(
-                    name = users.credentials.name,
-                    bio = users.bio,
-                    image = users.image
-                )
-            }
-        }
-    }
+//    val followersInfo by profileViewModel.FollowersInfo.collectAsState()
+//    val followStates by profileViewModel.followStates.collectAsState()
+//    LaunchedEffect(Unit) {
+//        profileViewModel.getFollowers()
+//    }
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.Black)
+//    ) {
+//        Spacer(Modifier.height(10.dp))
+//        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = null, tint = Color.White
+//        , modifier = Modifier
+//                .padding(16.dp)
+//                .clickable {
+//                    navController.popBackStack()
+//
+//                })
+//        Spacer(modifier = Modifier.height(4.dp))
+//
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            contentPadding = PaddingValues(
+//                horizontal = 16.dp,
+//                vertical = 16.dp
+//            ),
+//            verticalArrangement = Arrangement.spacedBy(12.dp)
+//        ) {
+//            items(followersInfo) { users ->
+//
+//                FollowerItem(
+//                    name = users.credentials.name,
+//                    bio = users.bio,
+//                    image = users.image
+//                )
+//            }
+//        }
+//    }
 
 }
 @Composable

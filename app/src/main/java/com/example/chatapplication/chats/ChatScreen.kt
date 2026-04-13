@@ -81,54 +81,54 @@ fun ChatScreen(
     navController: NavController
 ) {
 
-    val userInfo by chatViewModel.User_Info.collectAsState()
-    val messages by chatViewModel.Messages.collectAsState()
-    val status by profileViewModel.isOnline.collectAsState()
-
-    val name = userInfo?.credentials?.name ?: ""
-    val image = userInfo?.image
-    val statusText = status?.text ?: ""
-
-    LaunchedEffect(uid) {
-        chatViewModel.fetchUser(uid)
-        profileViewModel.checkStatus(uid)
-        chatViewModel.getMessage(uid)
-    }
-
-    Scaffold(
-        containerColor = BackgroundBlack,
-        topBar = {
-            ChatTopBar(name, image, statusText, navController =navController, uid = uid ){
-                chatViewModel.clearChat(uid)
-            }
-        },
-        bottomBar = {
-            ChatInputBar {
-                chatViewModel.sendMessage(it, uid)
-            }
-        }
-    ) { padding ->
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(BackgroundBlack)
-                .padding(padding)
-                .padding(horizontal = 12.dp),
-            reverseLayout = true,
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(messages.reversed()) { message ->
-                ChatBubble(
-                    message = message.message,
-                    isMe = message.senderUid == chatViewModel.currUid(),
-                    time = message.time
-                ){
-                    chatViewModel.deleteMessage(message.messageId)
-                }
-            }
-        }
-    }
+//    val userInfo by chatViewModel.User_Info.collectAsState()
+//    val messages by chatViewModel.Messages.collectAsState()
+//    val status by profileViewModel.isOnline.collectAsState()
+//
+//    val name = userInfo?.credentials?.name ?: ""
+//    val image = userInfo?.image
+//    val statusText = status?.text ?: ""
+//
+//    LaunchedEffect(uid) {
+//        chatViewModel.fetchUser(uid)
+//        profileViewModel.checkStatus(uid)
+//        chatViewModel.getMessage(uid)
+//    }
+//
+//    Scaffold(
+//        containerColor = BackgroundBlack,
+//        topBar = {
+//            ChatTopBar(name, image, statusText, navController =navController, uid = uid ){
+//                chatViewModel.clearChat(uid)
+//            }
+//        },
+//        bottomBar = {
+//            ChatInputBar {
+//                chatViewModel.sendMessage(it, uid)
+//            }
+//        }
+//    ) { padding ->
+//
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .background(BackgroundBlack)
+//                .padding(padding)
+//                .padding(horizontal = 12.dp),
+//            reverseLayout = true,
+//            contentPadding = PaddingValues(vertical = 8.dp)
+//        ) {
+//            items(messages.reversed()) { message ->
+//                ChatBubble(
+//                    message = message.message,
+//                    isMe = message.senderUid == chatViewModel.currUid(),
+//                    time = message.time
+//                ){
+//                    chatViewModel.deleteMessage(message.messageId)
+//                }
+//            }
+//        }
+//    }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

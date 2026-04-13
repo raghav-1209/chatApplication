@@ -38,69 +38,69 @@ fun AccountScreen(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val isLoggedIn by authViewModel.AuthState.collectAsState()
+//    var expanded by remember { mutableStateOf(false) }
+//    val isLoggedIn by authViewModel.authState.collectAsState()
+//
+//    LaunchedEffect(isLoggedIn) {
+//        if (!isLoggedIn) {
+//            navController.navigate(DestinationScreen.signInScreen.route) {
+//                popUpTo(0) { inclusive = true }
+//            }
+//        }
+//    }
 
-    LaunchedEffect(isLoggedIn) {
-        if (!isLoggedIn) {
-            navController.navigate(DestinationScreen.signInScreen.route) {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Account", color = Color.White) },
-                actions = {
-
-                    // 🔘 Icon button = dropdown trigger
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Account",
-                            tint = Color.White,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-
-                        DropdownMenuItem(
-                            text = { Text("Account") },
-                            onClick = {
-                                expanded = false
-                                navController.navigate(
-                                    DestinationScreen.profileScreen.route
-                                )
-                            }
-                        )
-
-                        DropdownMenuItem(
-                            text = { Text("Logout") },
-                            onClick = {
-                                expanded = false
-                                authViewModel.logout()
-                            }
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
-                )
-            )
-        },
-        bottomBar = {
-            BottomBar(bottomNavItems, navController)
-        },
-        containerColor = Color.Black
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            // content
-        }
-    }
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("Account", color = Color.White) },
+//                actions = {
+//
+//                    // 🔘 Icon button = dropdown trigger
+//                    IconButton(onClick = { expanded = true }) {
+//                        Icon(
+//                            imageVector = Icons.Default.Person,
+//                            contentDescription = "Account",
+//                            tint = Color.White,
+//                            modifier = Modifier.size(30.dp)
+//                        )
+//                    }
+//
+//                    DropdownMenu(
+//                        expanded = expanded,
+//                        onDismissRequest = { expanded = false }
+//                    ) {
+//
+//                        DropdownMenuItem(
+//                            text = { Text("Account") },
+//                            onClick = {
+//                                expanded = false
+//                                navController.navigate(
+//                                    DestinationScreen.profileScreen.route
+//                                )
+//                            }
+//                        )
+//
+//                        DropdownMenuItem(
+//                            text = { Text("Logout") },
+//                            onClick = {
+//                                expanded = false
+//                                authViewModel.logout()
+//                            }
+//                        )
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color.Black
+//                )
+//            )
+//        },
+//        bottomBar = {
+//            BottomBar(bottomNavItems, navController)
+//        },
+//        containerColor = Color.Black
+//    ) { padding ->
+//        Column(modifier = Modifier.padding(padding)) {
+//            // content
+//        }
+//    }
 }

@@ -59,16 +59,33 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    val authState by authViewModel.AuthState.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
     val context= LocalContext.current
 
 
     LaunchedEffect(authState) {
-        if (authState)
-            navController.navigate(DestinationScreen.welcomeScreen.route)
-    }
+        when (authState) {
 
-    /* 🔥 ANIMATIONS */
+            is AuthState.Authenticated -> {
+                navController.navigate(DestinationScreen.welcomeScreen.route) {
+                    popUpTo(DestinationScreen.loginScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+
+            is AuthState.Error -> {
+                Toast.makeText(
+                    context,
+                    (authState as AuthState.Error).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            else -> {}
+        }
+    }
+    /*  ANIMATIONS */
     val infinite = rememberInfiniteTransition(label = "anim")
 
     val floatY by infinite.animateFloat(
@@ -197,7 +214,12 @@ fun LoginScreen(
                             )
 
                         ) {
-                            Text("Login")
+                            if (authState is AuthState.Loading) {
+                                CircularProgressIndicator()
+                            } else {
+
+                                Text("Login")
+                            }
                         }
 
                         Spacer(Modifier.height(12.dp))

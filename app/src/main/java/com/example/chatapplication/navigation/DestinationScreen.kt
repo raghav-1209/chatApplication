@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.chatapplication.auth.AuthManager
 import com.example.chatapplication.auth.AuthViewModel
 import com.example.chatapplication.auth.LoginScreen
 import com.example.chatapplication.auth.SignInScreen
@@ -62,11 +63,12 @@ sealed class DestinationScreen (val route: String){
 @Composable
 fun navFlow(onSplash:()->Unit){
     val statusViewModel: StatusViewModel = hiltViewModel()
+    val authManager: AuthManager= hiltViewModel()
 
     val navController= rememberNavController()
     NavHost(navController, startDestination = DestinationScreen.splashScreen.route){
         composable(DestinationScreen.splashScreen.route){
-            splashScreen(onSplash = {onSplash()},navController)
+            splashScreen(onSplash = {onSplash()},navController,authManager)
         }
         composable(DestinationScreen.loginScreen.route){
             val viewmodel: AuthViewModel= hiltViewModel()

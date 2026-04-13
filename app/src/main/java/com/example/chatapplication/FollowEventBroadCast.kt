@@ -32,7 +32,7 @@ class FollowEventBroadCast : BroadcastReceiver() {
 
                 "ACTION_ACCEPT" -> {
                     Log.e("FollowListenBroadCast","The Accept action Called")
-                    dataBaseRep.acceptFollow(receiverUid,senderUid)
+//                    dataBaseRep.acceptFollow(receiverUid,senderUid)
 
 
 
@@ -41,7 +41,7 @@ class FollowEventBroadCast : BroadcastReceiver() {
 
                 "ACTION_REJECT" -> {
                     Log.e("FollowListenBroadCast","The Accept action Called")
-                        dataBaseRep.rejectFollow(receiverUid, senderUid)
+//                        dataBaseRep.rejectFollow(receiverUid, senderUid)
 
                 }
 
