@@ -5,36 +5,14 @@ import com.example.chatapplication.apis.DataBaseApis
 import com.example.chatapplication.apis.Info
 import com.example.chatapplication.apis.response
 import com.example.chatapplication.auth.AuthManager
-import com.example.chatapplication.client.MyHttpClient
-import com.example.chatapplication.constants.UrlConstants
-import com.example.chatapplication.models.BioData
-import com.example.chatapplication.models.ChatData
 import com.example.chatapplication.models.FcmData
-import com.example.chatapplication.models.FollowInfo
-import com.example.chatapplication.models.FollowState
 import com.example.chatapplication.models.SignInData
-import com.example.chatapplication.models.StatusModel
-import com.example.chatapplication.models.StatusWithUser
 import com.example.chatapplication.models.UserSession
-import com.example.chatapplication.models.WholeUser
-import com.example.chatapplication.models.isOnline
 import com.example.chatapplication.models.loginData
 import com.example.chatapplication.prefernces.SessionManager
-import io.ktor.client.call.body
-import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.headers
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.util.InternalAPI
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import okhttp3.internal.userAgent
 import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -542,34 +520,12 @@ class DataBaseRep @Inject constructor(
     private val sessionManager: SessionManager,
     private val authManager: AuthManager
 ) {
-    private val mutex = Mutex()
-
-    private suspend fun <T> safeApiCall(
-        apiCall: suspend () -> T,
-        isRetry: Boolean = false
-    ): Result<T> {
-        return try {
-            Result.success(apiCall())
-
-        } catch (e: HttpException) {
-
-            if (e.code() == 401 && !isRetry) {
-                return handleRefresh(apiCall)
-            }
-
-            Result.failure(e)
-
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
 
     suspend fun login(data: loginData,uid: String): Result<UserSession> {
         return try {
             val response = apis.login(data)
+            Log.e("DataBaseRep","$response")
 
-            // save session once login success
             sessionManager.saveSession(
                 uid = uid,
                 accessToken = response.token,
@@ -583,38 +539,12 @@ class DataBaseRep @Inject constructor(
             Result.failure(e)
         }
     }
-    private suspend fun <T> handleRefresh(
-        apiCall: suspend () -> T
-    ): Result<T> {
 
-        return mutex.withLock {
-
-            val refreshToken = sessionManager.getRefreshToken()
-                ?: return Result.failure(Exception("No refresh token"))
-
-            try {
-                val response = apis.refreshToken(Info(refreshToken))
-
-                val uid = sessionManager.getUid()
-                    ?: return Result.failure(Exception("User not found"))
-
-                sessionManager.saveSession(
-                    uid = uid,
-                    accessToken = response.token,
-                    refreshToken = response.refreshToken
-                )
-
-                safeApiCall(apiCall, isRetry = true)
-
-            } catch (e: Exception) {
-                authManager.logout()
-                Result.failure(e)
-            }
-        }
-    }
     suspend fun signIn(data: SignInData): Result<UserSession> {
         return try {
             val response = apis.signIn(data)
+            Log.e("DataBaseRep","The signIn response$response")
+
 
             sessionManager.saveSession(
                 uid = data.uid,
@@ -635,16 +565,17 @@ class DataBaseRep @Inject constructor(
             Result.success(response)
         }catch (e: Exception){
             Log.e("DataBaseRep","The SaveTokenInDb Failed Cuz of $e")
-
             Result.failure(e)
         }
     }
     suspend fun check(): Result<response> {
-        return safeApiCall(apiCall = {
-            apis.check()
-        })
+        return try {
+            Result.success(apis.check())
+        } catch (e: Exception) {
+            Log.e("DataBaseRep","${e.message}")
+            Result.failure(e)
+        }
     }
-
 
 
 }

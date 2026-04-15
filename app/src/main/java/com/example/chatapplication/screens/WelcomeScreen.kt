@@ -83,7 +83,6 @@ fun WelcomeScreen(
                     color = Color.White
                 )
                 Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.clickable{
-                    Toast.makeText(context,authViewModel.getName(), Toast.LENGTH_LONG).show()
                     authViewModel.check(context)
                 }, tint = Color.White)
             }

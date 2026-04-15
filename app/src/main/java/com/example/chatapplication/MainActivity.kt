@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,6 +26,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chatapplication.auth.AuthViewModel
 import com.example.chatapplication.client.WebSocketManager
 import com.example.chatapplication.navigation.navFlow
 import com.example.chatapplication.profile.ProfileViewModel
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+
             ChatApplicationTheme {
                 navFlow(onSplash = {
                     isLoading=false

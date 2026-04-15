@@ -75,11 +75,11 @@ fun navFlow(onSplash:()->Unit){
             val profileViewModel: ProfileViewModel= hiltViewModel()
 
 
-            LoginScreen(viewmodel,navController,profileViewModel)
+            LoginScreen(viewmodel,navController,profileViewModel,authManager)
         }
         composable(DestinationScreen.signInScreen.route){
             val viewmodel: AuthViewModel= hiltViewModel()
-            SignInScreen(viewmodel,navController)
+            SignInScreen(viewmodel,navController,authManager)
         }
         composable(DestinationScreen.welcomeScreen.route){
             val viewmodel: AuthViewModel= hiltViewModel()
@@ -94,12 +94,13 @@ fun navFlow(onSplash:()->Unit){
             val authViewModel: AuthViewModel=hiltViewModel()
 
 
-            ProfileScreen(navController,viewModel,authViewModel)
+
+            AccountScreen(navController,authViewModel,authManager)
+
         }
         composable(DestinationScreen.accountScreen.route) {
             val viewmodel: AuthViewModel= hiltViewModel()
 
-            AccountScreen(navController,viewmodel)
         }
         composable(DestinationScreen.statusScreen.route) {
 

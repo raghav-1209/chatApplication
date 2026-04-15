@@ -53,13 +53,14 @@ import com.example.chatapplication.profile.ProfileViewModel
 fun LoginScreen(
     authViewModel: AuthViewModel,
     navController: NavController,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    authManager: AuthManager
 ) {
 
     var email by remember { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    val authState by authViewModel.authState.collectAsState()
+    val authState by authManager.authState.collectAsState()
     val context= LocalContext.current
 
 

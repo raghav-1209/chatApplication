@@ -5,6 +5,7 @@ import com.example.chatapplication.models.SignInData
 import com.example.chatapplication.models.UserSession
 import com.example.chatapplication.models.loginData
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface DataBaseApis {
@@ -16,7 +17,7 @@ interface DataBaseApis {
     suspend fun  refreshToken(@Body info: Info): UserSession
     @POST("/auth/login")
     suspend fun  login(@Body loginData: loginData): UserSession
-    @POST("/check")
+    @GET("check")
     suspend fun check():response
 }
 

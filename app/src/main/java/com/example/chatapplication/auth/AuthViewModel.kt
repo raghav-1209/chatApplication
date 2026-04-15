@@ -15,6 +15,8 @@ import com.example.chatapplication.repository.DataBaseRep
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,11 +33,9 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private fun currentUid() = fbAuth.currentUser?.uid ?: ""
-    private val _authState = MutableStateFlow<AuthState>(AuthState.idle)
-    val authState: StateFlow<AuthState> = _authState
+
 
     fun signIn(email: String, password: String, name: String) {
-        _authState.value = AuthState.Loading
         val cleanEmail = email.trim()
         val cleanName = name.trim()
 
@@ -55,7 +55,6 @@ class AuthViewModel @Inject constructor(
 
                         response.onSuccess {
                             Log.d("Auth_VM", "SignIn success")
-                            _authState.value = AuthState.Authenticated
 
                             //  Setup system first
                             connectionController.setLoginState(true, it.token)
@@ -65,15 +64,18 @@ class AuthViewModel @Inject constructor(
 
                             //  Save FCM
                             FirebaseMessaging.getInstance().token.addOnSuccessListener { fcm ->
-                                viewModelScope.launch {
-                                    databaseRep.saveTokenInDb(FcmData(uid, fcm))
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    try {
+                                        databaseRep.saveTokenInDb(FcmData(uid, fcm))
+                                    } catch (e: Exception) {
+                                        Log.e("FCM", "Failed: ${e.message}")
+                                    }
                                 }
                             }
                         }
 
                         response.onFailure {
                             Log.e("Auth_VM", "Backend SignIn failed ${it.message}")
-                            _authState.value = AuthState.Error(it.message?:"something went wrong")
 
                             authManager.logout()
                         }
@@ -85,12 +87,12 @@ class AuthViewModel @Inject constructor(
                 }
             }
             .addOnFailureListener {
+
                 Log.e("Auth_VM", "Firebase SignIn failed ${it.message}")
             }
     }
 
     fun login(email: String, password: String) {
-        _authState.value = AuthState.Loading
         val cleanEmail = email.trim()
 
         fbAuth.signInWithEmailAndPassword(cleanEmail, password)
@@ -110,7 +112,6 @@ class AuthViewModel @Inject constructor(
 
                         response.onSuccess {
                             Log.d("Auth_VM", "Login success")
-                            _authState.value = AuthState.Authenticated
 
                             // Setup system first
                             connectionController.setLoginState(true, it.token)
@@ -120,20 +121,24 @@ class AuthViewModel @Inject constructor(
 
                             //  Save FCM
                             FirebaseMessaging.getInstance().token.addOnSuccessListener { fcm ->
-                                viewModelScope.launch {
-                                    databaseRep.saveTokenInDb(FcmData(uid, fcm))
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    try {
+                                        databaseRep.saveTokenInDb(FcmData(uid, fcm))
+                                    } catch (e: Exception) {
+                                        Log.e("FCM", "Failed: ${e.message}")
+                                    }
                                 }
                             }
                         }
 
                         response.onFailure {
                             Log.e("Auth_VM", "Backend login failed ${it.message}")
-                            _authState.value = AuthState.Error(it.message?:"something went wrong")
 
                             authManager.logout()
                         }
 
                     } catch (e: Exception) {
+
                         Log.e("Auth_VM", "Login exception ${e.message}")
                         authManager.logout()
                     }
@@ -150,21 +155,21 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun check(context: Context) {
+    private val _checkState = MutableStateFlow<Boolean?>(null)
+    val checkState = _checkState
+
+    fun check(context:Context) {
         viewModelScope.launch {
-            try {
-                val response = databaseRep.check()
+            val response = databaseRep.check()
+            response.onFailure {
+                Toast.makeText(context,"Who Are U",Toast.LENGTH_LONG).show()
 
-                response.onSuccess {
-                    Toast.makeText(context, "Yo Homie", Toast.LENGTH_LONG).show()
-                }
+                Log.e("Auth_Vm","${it.message}")
+            }
+            response.onSuccess {
+                Toast.makeText(context,"Yo Homie",Toast.LENGTH_LONG).show()
 
-                response.onFailure {
-                    Toast.makeText(context, "Who are you?", Toast.LENGTH_LONG).show()
-                }
-
-            } catch (e: Exception) {
-                Log.e("Auth_VM", "Check error ${e.message}")
+                _checkState.value = it.success
             }
         }
     }

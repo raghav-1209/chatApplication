@@ -37,11 +37,11 @@ import com.example.chatapplication.navigation.DestinationScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignInScreen(authViewModel: AuthViewModel,navController: NavController) {
+fun SignInScreen(authViewModel: AuthViewModel,navController: NavController,authManager: AuthManager) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val authState by authViewModel.authState.collectAsState()
+    val authState by authManager.authState.collectAsState()
     val context=LocalContext.current
 
 

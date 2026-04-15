@@ -17,6 +17,7 @@ class SessionManager @Inject constructor(context: Context) {
             putString("access_token", accessToken)
             putString("refresh_token", refreshToken)
             apply()
+            commit()
         }
     }
 
