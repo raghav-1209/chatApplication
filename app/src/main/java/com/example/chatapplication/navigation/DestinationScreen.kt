@@ -100,6 +100,9 @@ fun navFlow(onSplash:()->Unit){
         }
         composable(DestinationScreen.accountScreen.route) {
             val viewmodel: AuthViewModel= hiltViewModel()
+            val profileViewModel: ProfileViewModel= hiltViewModel()
+
+            ProfileScreen(navController, profileViewModel =profileViewModel,viewmodel)
 
         }
         composable(DestinationScreen.statusScreen.route) {

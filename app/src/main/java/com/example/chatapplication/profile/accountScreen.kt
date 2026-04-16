@@ -80,7 +80,7 @@ fun AccountScreen(
                             onClick = {
                                 expanded = false
                                 navController.navigate(
-                                    DestinationScreen.profileScreen.route
+                                    DestinationScreen.accountScreen.route
                                 )
                             }
                         )

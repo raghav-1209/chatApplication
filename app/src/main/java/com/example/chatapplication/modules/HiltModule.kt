@@ -3,17 +3,6 @@ package com.example.chatapplication.modules
 import android.content.Context
 import com.example.chatapplication.ConnectionController
 import com.example.chatapplication.apis.AuthInterceptor
-import com.google.android.gms.common.data.DataBufferRef
-import com.google.gson.Gson
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import javax.inject.Singleton
 import com.example.chatapplication.apis.DataBaseApis
 import com.example.chatapplication.apis.RefreshApi
 import com.example.chatapplication.apis.TokenAuthenticator
@@ -23,13 +12,19 @@ import com.example.chatapplication.constants.UrlConstants
 import com.example.chatapplication.prefernces.SessionManager
 import com.example.chatapplication.prefernces.UserPreferences
 import com.example.chatapplication.repository.DataBaseRep
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
     @InstallIn(SingletonComponent::class)
@@ -45,8 +40,8 @@ import javax.inject.Named
     fun userPreferences(context: Context)= UserPreferences(context)
     @Provides
     @Singleton
-    fun provideAuthInterceptor(sessionManager: SessionManager): AuthInterceptor {
-        return AuthInterceptor(sessionManager)
+    fun provideAuthInterceptor(sessionManager: SessionManager,  @Named("refresh_api") refreshApi: RefreshApi): AuthInterceptor {
+        return AuthInterceptor(sessionManager,refreshApi)
     }
     @Provides
     @Singleton

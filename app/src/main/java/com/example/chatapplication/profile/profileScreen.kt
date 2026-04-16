@@ -94,37 +94,42 @@ fun ProfileScreen(
 //        uri?.let { profileViewModel.saveImage(it) }
 //    }
 //
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(Color.Black)
-//    ) {
-//
-//        TopAppBar(
-//            title = {Text("Account",color=Color.White)},
-//            navigationIcon = {
-//                IconButton(onClick = {
-//                    navController.popBackStack()
-//                }) {
-//                    Icon(
-//                        imageVector = Icons.Default.ArrowBack,
-//                        contentDescription = "Back",
-//                        tint = Color.White
-//                    )
-//                }
-//            },
-//            colors = TopAppBarDefaults.topAppBarColors(
-//                containerColor = Color.Black
-//            )
-//        )
-//
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(horizontal = 24.dp),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//
+    val userName =authViewModel.getName()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+
+        TopAppBar(
+            title = {Text("Account",color=Color.White)},
+            navigationIcon = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Black
+            )
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(userName, color = Color.White)
+
+        }
+        }
+
 //
 //            Spacer(modifier = Modifier.height(60.dp))
 //
