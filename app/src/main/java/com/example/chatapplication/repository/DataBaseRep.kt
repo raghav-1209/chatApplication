@@ -521,33 +521,15 @@ class DataBaseRep @Inject constructor(
     private val authManager: AuthManager
 ) {
 
-    suspend fun login(data: loginData,uid: String): Result<UserSession> {
-        return try {
-            val response = apis.login(data)
-            Log.e("DataBaseRep","$response")
 
-            sessionManager.saveSession(
-                uid = uid,
-                accessToken = response.token,
-                refreshToken = response.refreshToken
-            )
-
-            Result.success(response)
-
-        } catch (e: Exception) {
-            Log.e("DataBaseRep"," The Login Failed $e")
-            Result.failure(e)
-        }
-    }
-
-    suspend fun signIn(data: SignInData): Result<UserSession> {
+    suspend fun signIn(data: SignInData,uid: String): Result<UserSession> {
         return try {
             val response = apis.signIn(data)
             Log.e("DataBaseRep","The signIn response$response")
 
 
             sessionManager.saveSession(
-                uid = data.uid,
+               uid  = uid,
                 accessToken = response.token,
                 refreshToken = response.refreshToken
             )

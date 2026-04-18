@@ -12,7 +12,7 @@ class AuthManager @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel(){
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
+    private val _authState = MutableStateFlow<AuthState>(AuthState.idle)
     val authState = _authState
 
     init {
@@ -25,9 +25,15 @@ class AuthManager @Inject constructor(
             if (token != null) AuthState.Authenticated
             else AuthState.Unauthenticated
     }
+    fun loading(){
+        _authState.value= AuthState.Loading
+    }
 
     fun setAuthenticated() {
         _authState.value = AuthState.Authenticated
+    }
+    fun setError(message: String) {
+        _authState.value = AuthState.Error(message)
     }
 
     fun logout() {

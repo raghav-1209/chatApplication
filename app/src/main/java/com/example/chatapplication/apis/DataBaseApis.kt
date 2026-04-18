@@ -11,13 +11,11 @@ import retrofit2.http.POST
 interface DataBaseApis {
     @POST("/auth/fcmToken")
     suspend fun saveFcm(@Body fcmData: FcmData):response
-    @POST("/auth/signIn")
+    @POST("/auth/retry")
     suspend fun  signIn(@Body signInData: SignInData): UserSession
     @POST("/auth/refreshToken")
     suspend fun  refreshToken(@Body info: Info): UserSession
-    @POST("/auth/login")
-    suspend fun  login(@Body loginData: loginData): UserSession
-    @GET("check")
+    @POST("check")
     suspend fun check():response
 }
 

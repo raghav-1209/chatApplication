@@ -36,53 +36,59 @@ class AuthViewModel @Inject constructor(
 
 
     fun signIn(email: String, password: String, name: String) {
+        authManager.loading()
         val cleanEmail = email.trim()
         val cleanName = name.trim()
 
         fbAuth.createUserWithEmailAndPassword(cleanEmail, password)
             .addOnSuccessListener {
 
+                fbAuth.currentUser?.getIdToken(true)?.addOnSuccessListener{result->
+                    val idToken = result.token?:""
+                    val uid = currentUid()
+                    viewModelScope.launch {
 
-                val uid = currentUid()
+                        try {
+                            val response = databaseRep.signIn(
+                                SignInData(cleanEmail, name = cleanName,idToken),
+                                uid
+                            )
 
-                viewModelScope.launch {
-                    try {
-                        val response = databaseRep.signIn(
-                            SignInData(cleanEmail, name = cleanName, uid)
-                        )
+                            userPreferences.saveName(cleanName)
 
-                        userPreferences.saveName(cleanName)
+                            response.onSuccess {
+                                Log.d("Auth_VM", "SignIn success")
 
-                        response.onSuccess {
-                            Log.d("Auth_VM", "SignIn success")
+                                //  Setup system first
+                                connectionController.setLoginState(true, it.token)
 
-                            //  Setup system first
-                            connectionController.setLoginState(true, it.token)
+                                //  THEN update UI state
+                                authManager.setAuthenticated()
 
-                            //  THEN update UI state
-                            authManager.setAuthenticated()
 
-                            //  Save FCM
-                            FirebaseMessaging.getInstance().token.addOnSuccessListener { fcm ->
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    try {
-                                        databaseRep.saveTokenInDb(FcmData(uid, fcm))
-                                    } catch (e: Exception) {
-                                        Log.e("FCM", "Failed: ${e.message}")
+                                //  Save FCM
+                                FirebaseMessaging.getInstance().token.addOnSuccessListener { fcm ->
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        try {
+                                            databaseRep.saveTokenInDb(FcmData(uid, fcm))
+                                        } catch (e: Exception) {
+                                            Log.e("FCM", "Failed: ${e.message}")
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        response.onFailure {
-                            Log.e("Auth_VM", "Backend SignIn failed ${it.message}")
+                            response.onFailure {
+                                Log.e("Auth_VM", "Backend SignIn failed ${it.message}")
+                                authManager.setError("Invalid Email Or PassWord")
 
+                                authManager.logout()
+                            }
+
+                        } catch (e: Exception) {
+                            Log.e("Auth_VM", "SignIn exception ${e.message}")
                             authManager.logout()
                         }
-
-                    } catch (e: Exception) {
-                        Log.e("Auth_VM", "SignIn exception ${e.message}")
-                        authManager.logout()
                     }
                 }
             }
@@ -93,6 +99,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun login(email: String, password: String) {
+        authManager.loading()
         val cleanEmail = email.trim()
 
         fbAuth.signInWithEmailAndPassword(cleanEmail, password)
@@ -100,13 +107,15 @@ class AuthViewModel @Inject constructor(
                 Log.e("Auth_VM", "Firebase Login failed ${it.message}")
             }
             .addOnSuccessListener {
+                fbAuth.currentUser?.getIdToken(true)?.addOnSuccessListener{result->
+                    val idToken=result.token?:""
 
                 val uid = currentUid()
 
                 viewModelScope.launch {
                     try {
-                        val response = databaseRep.login(
-                            loginData(cleanEmail, password),
+                        val response = databaseRep.signIn(
+                            SignInData(cleanEmail, name =null, idToken = idToken ),
                             uid
                         )
 
@@ -133,15 +142,16 @@ class AuthViewModel @Inject constructor(
 
                         response.onFailure {
                             Log.e("Auth_VM", "Backend login failed ${it.message}")
-
+                            authManager.setError("Invalid Email Or PassWord")
                             authManager.logout()
                         }
 
-                    } catch (e: Exception) {
+                    }catch (e: Exception) {
 
                         Log.e("Auth_VM", "Login exception ${e.message}")
                         authManager.logout()
                     }
+                }
                 }
             }
     }
