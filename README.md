@@ -7,7 +7,6 @@ A modern real-time one-to-one chat application built using **Jetpack Compose** f
 ## Features
 
 * Real-time one-to-one messaging
-* Secure user authentication using Firebase Phone Authentication (OTP Verification)
 * JWT-based authentication for backend API protection
 * Refresh Token + Access Token session management
 * Firebase Firestore for instant message synchronization
@@ -43,11 +42,9 @@ A modern real-time one-to-one chat application built using **Jetpack Compose** f
 ### Database
 
 * PostgreSQL
-* Firebase Firestore
 
 ### Authentication
 
-* Firebase Phone Authentication
 * JWT Access Token
 * Refresh Token
 
@@ -89,11 +86,10 @@ Backend Layer
 
 ## Authentication Flow
 
-### User Registration/Login
+### User SignIn/Login
 
-1. User enters phone number
-2. Firebase sends OTP
-3. User verifies OTP
+1. User enters email and password
+2. Firebase verifes it
 4. Backend generates JWT Access Token + Refresh Token
 5. Tokens are securely stored
 6. User enters chat application
@@ -116,19 +112,14 @@ Backend Layer
 * Refresh Tokens
 * User Metadata
 * System Management Data
+* chat Info
 
-### Firebase Firestore Stores
 
-* Real-time Chat Messages
-* Chat Room Information
-* Message Status
-* Instant Message Sync
 
----
 
 ## Security Features
 
-* Secure OTP verification
+
 * JWT authentication
 * Protected backend routes
 * Refresh token management
