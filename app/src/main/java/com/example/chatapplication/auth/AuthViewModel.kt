@@ -9,7 +9,6 @@ import com.example.chatapplication.ConnectionController
 import com.example.chatapplication.client.WebSocketManager
 import com.example.chatapplication.models.FcmData
 import com.example.chatapplication.models.SignInData
-import com.example.chatapplication.models.loginData
 import com.example.chatapplication.prefernces.UserPreferences
 import com.example.chatapplication.repository.DataBaseRep
 import com.google.firebase.auth.FirebaseAuth
@@ -18,7 +17,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -66,7 +64,7 @@ class AuthViewModel @Inject constructor(
                                 authManager.setAuthenticated()
 
 
-                                //  Save FCM
+//                                //  Save FCM
                                 FirebaseMessaging.getInstance().token.addOnSuccessListener { fcm ->
                                     CoroutineScope(Dispatchers.IO).launch {
                                         try {
@@ -79,22 +77,26 @@ class AuthViewModel @Inject constructor(
                             }
 
                             response.onFailure {
+                                rollbackFirebaseUser()
                                 Log.e("Auth_VM", "Backend SignIn failed ${it.message}")
-                                authManager.setError("Invalid Email Or PassWord")
-
+                                authManager.setError(
+                                    it.message ?: "Failed to create account"
+                                )
                                 authManager.logout()
                             }
 
                         } catch (e: Exception) {
+                            rollbackFirebaseUser()
                             Log.e("Auth_VM", "SignIn exception ${e.message}")
                             authManager.logout()
                         }
                     }
                 }
             }
-            .addOnFailureListener {
-
+                .addOnFailureListener {
+                authManager.setError(it.message ?: "Authentication failed")
                 Log.e("Auth_VM", "Firebase SignIn failed ${it.message}")
+
             }
     }
 
@@ -114,7 +116,7 @@ class AuthViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     try {
-                        val response = databaseRep.signIn(
+                        val response = databaseRep.login(
                             SignInData(cleanEmail, name =null, idToken = idToken ),
                             uid
                         )
@@ -141,12 +143,14 @@ class AuthViewModel @Inject constructor(
                         }
 
                         response.onFailure {
+                            rollbackFirebaseUser()
                             Log.e("Auth_VM", "Backend login failed ${it.message}")
                             authManager.setError("Invalid Email Or PassWord")
                             authManager.logout()
                         }
 
                     }catch (e: Exception) {
+                        rollbackFirebaseUser()
 
                         Log.e("Auth_VM", "Login exception ${e.message}")
                         authManager.logout()
@@ -170,21 +174,35 @@ class AuthViewModel @Inject constructor(
 
     fun check(context:Context) {
         viewModelScope.launch {
-            val response = databaseRep.check()
-            response.onFailure {
-                Toast.makeText(context,"Who Are U",Toast.LENGTH_LONG).show()
+            try {
 
-                Log.e("Auth_Vm","${it.message}")
-            }
-            response.onSuccess {
-                Toast.makeText(context,"Yo Homie",Toast.LENGTH_LONG).show()
+                val response = databaseRep.getUser()
+                response.onFailure {
+                    Toast.makeText(context, "Who Are U", Toast.LENGTH_LONG).show()
 
-                _checkState.value = it.success
+                    Log.e("Auth_Vm", "${it.message}")
+                }
+                response.onSuccess {
+                    Toast.makeText(context, "Yo Homie ${it.name}", Toast.LENGTH_LONG).show()
+
+                    _checkState.value =true
+                }
+            }catch (e: Exception){
+                Log.e("Auth_Vm","${e.message}")
             }
         }
     }
 
     fun getName(): String {
         return userPreferences.getName() ?: ""
+    }
+    private fun rollbackFirebaseUser() {
+        fbAuth.currentUser?.delete()
+            ?.addOnSuccessListener {
+                Log.d("AUTH", "Firebase user rolled back")
+            }
+            ?.addOnFailureListener {
+                Log.e("AUTH", "Failed to delete Firebase user")
+            }
     }
 }

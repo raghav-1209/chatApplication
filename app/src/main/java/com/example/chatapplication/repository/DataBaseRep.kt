@@ -3,6 +3,7 @@ package com.example.chatapplication.repository
 import android.util.Log
 import com.example.chatapplication.apis.DataBaseApis
 import com.example.chatapplication.apis.Info
+import com.example.chatapplication.apis.UserInfo
 import com.example.chatapplication.apis.response
 import com.example.chatapplication.auth.AuthManager
 import com.example.chatapplication.models.FcmData
@@ -518,7 +519,7 @@ import javax.inject.Singleton
 class DataBaseRep @Inject constructor(
     private val apis: DataBaseApis,
     private val sessionManager: SessionManager,
-    private val authManager: AuthManager
+    private val authManager: AuthManager,
 ) {
 
 
@@ -541,6 +542,23 @@ class DataBaseRep @Inject constructor(
             Result.failure(e)
         }
     }
+    suspend fun login(data: SignInData,uid: String): Result<UserSession> {
+        return try {
+            val response = apis.login(data)
+            Log.e("DataBaseRep","The login response$response")
+
+
+            sessionManager.saveSession(
+                uid  = uid,
+                accessToken = response.token,
+                refreshToken = response.refreshToken
+            )
+            Result.success(response)
+        } catch (e: Exception) {
+            Log.e("DataBaseRep","The login Failed Cuz of $e")
+            Result.failure(e)
+        }
+    }
     suspend fun saveTokenInDb(fcmData: FcmData):Result<response>{
         return try {
             val response=apis.saveFcm(fcmData)
@@ -555,6 +573,15 @@ class DataBaseRep @Inject constructor(
             Result.success(apis.check())
         } catch (e: Exception) {
             Log.e("DataBaseRep","${e.message}")
+            Result.failure(e)
+        }
+    }
+    suspend fun getUser(): Result<UserInfo>{
+        return try {
+            Result.success(apis.getUser())
+        }catch (e: HttpException){
+            Log.e("DataBaseRep","cannot get User${e.response()?.errorBody()?.string() ?: ""}")
+
             Result.failure(e)
         }
     }

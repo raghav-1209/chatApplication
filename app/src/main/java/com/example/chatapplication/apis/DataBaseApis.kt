@@ -11,13 +11,22 @@ import retrofit2.http.POST
 interface DataBaseApis {
     @POST("/auth/fcmToken")
     suspend fun saveFcm(@Body fcmData: FcmData):response
-    @POST("/auth/retry")
+    @POST("/auth/login")
+    suspend fun  login(@Body signInData: SignInData): UserSession
+    @POST("/auth/signIn")
     suspend fun  signIn(@Body signInData: SignInData): UserSession
+
     @POST("/auth/refreshToken")
     suspend fun  refreshToken(@Body info: Info): UserSession
-    @POST("check")
+    @GET("/check")
     suspend fun check():response
+    @GET("/auth/getUserInfo")
+    suspend fun getUser():UserInfo
 }
+data class UserInfo(
+    val email: String,
+    val uid: String,
+    val name: String,)
 
 data class Info(
     val token: String
